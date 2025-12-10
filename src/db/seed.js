@@ -13,7 +13,7 @@ async function seed(){
 
 
         const hashedPassword1 = await bcrypt.hash('password', 12)
-        const hashedPassword2 = await bcrypt.hash('1234', 10)
+        const hashedPassword2 = await bcrypt.hash('1234', 12)
 
         const seedUsers = [
             {
