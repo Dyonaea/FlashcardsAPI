@@ -20,6 +20,7 @@ export const collectionsTable = sqliteTable("collections", {
   description: text("description", { length: 500 }),
   owner_id: text("owner_id")
     .notNull().references(() => usersTable.id, {onDelete: 'cascade'}),
+  visibility: text({enum:['PRIVATE', 'PUBLIC']}).notNull().default('PRIVATE')
 });
 
 export const cardTable = sqliteTable("cards", {
