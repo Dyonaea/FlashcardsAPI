@@ -4,18 +4,19 @@ import {
   getCollectionById,
   getAllCollections,
   searchCollections,
+  updateCollection,
+  deleteCollection,
 } from "../controller/collectionController.js";
 import { validateBody, validateParam } from "../middleware/validation.js";
 import {
   createCollectionSchema,
   getCollectionSchema,
   searchCollectionSchema,
+  updateCollectionSchema,
 } from "../model/collection.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
 
 const router = Router();
-
-// Sample route for collections
 
 router.use(authenticateToken);
 
@@ -30,5 +31,14 @@ router.get(
   validateParam(searchCollectionSchema),
   searchCollections
 );
+
+router.patch(
+  "/:id",
+  validateParam(getCollectionSchema),
+  validateBody(updateCollectionSchema),
+  updateCollection
+);
+
+router.delete("/:id", validateParam(idCollection), deleteCollection);
 
 export default router;
