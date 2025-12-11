@@ -8,11 +8,12 @@ import { eq } from "drizzle-orm"
 
 /**
  * 
- * @param {response} res 
  * @param {request} req 
+ * @param {response} res 
  */
 export const register = async (req, res) =>{
     try{
+        console.log(req.body)
         const {email, first_name, last_name, password} = req.body
         const hashedPassword = await bcrypt.hash(password, 12)
         const [result] = await db.insert(usersTable).values({
@@ -23,7 +24,8 @@ export const register = async (req, res) =>{
         }).returning({
             id: usersTable.id,
             email: usersTable.email,
-            username: usersTable.username
+            first_name: usersTable.first_name,
+            last_name: usersTable.last_name
         })
         const token = jwt.sign({
             userId: result.id,
