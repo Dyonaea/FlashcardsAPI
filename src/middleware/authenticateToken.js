@@ -22,6 +22,4 @@ export const authenticateToken = (req, res, next) =>{
         console.error(error)
         res.status(401).json({error: 'Invalid or expired token'})
     }
-
-
 }

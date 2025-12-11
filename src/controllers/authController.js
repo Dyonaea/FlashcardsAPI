@@ -55,7 +55,7 @@ export const login = async(req, res)=>{
         const isValidPassword = await bcrypt.compare(password, user.password)
 
         if (!isValidPassword){
-            return res.status(401).json({error: "invalid email or passwird"})
+            return res.status(401).json({error: "invalid email or password"})
         }
         const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET, {expiresIn: '24h'})
         res.status(200).json({
@@ -71,5 +71,15 @@ export const login = async(req, res)=>{
     }catch(error){
         console.error(error)
         res.status(500).json({error: "Login failed"})
+    }
+}
+
+export const recover = async(req, res)=>{
+    try{
+        const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.userId.userId))
+
+        res.status(200).json({first_name:user.first_name, last_name: user.last_name, email: user.email})
+    }catch(error){
+        res.status(500).json({user: "Failed to recover infos"})
     }
 }
