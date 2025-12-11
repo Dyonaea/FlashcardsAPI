@@ -17,6 +17,7 @@ export const authenticateToken = (req, res, next) =>{
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
         const userId = decodedToken.userId
         req.userId = {userId}
+        //TODO retirer les userId.userId et mettre juste req.userId = userId
         next()
     }catch(error){
         console.error(error)

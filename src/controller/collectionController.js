@@ -1,18 +1,23 @@
 import { db } from "../db/database.js";
 import { collectionsTable, usersTable } from "../db/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, like, and } from "drizzle-orm";
 
 export const createCollection = async (req, res) => {
-    const { title, visibility, description } = req.body;
-    console.log("Trying to create collection with body : ", req.body);
-  if (!req.user || !req.user.id) {
-    return res.status(401).send({ error: "You need to be logged in in order to create a collection" });
+  const { title, visibility, description } = req.body;
+  console.log("Trying to create collection with body : ", req.body);
+
+  console.log("Request made by ; " + req.userId.userId);
+  if (!req.userId.userId) {
+    return res.status(401).send({
+      error: "You need to be logged in in order to create a collection",
+    });
   }
+  const userId = req.userId.userId;
   try {
     const user = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.id, req.user.id))
+      .where(eq(usersTable.id, userId))
       .limit(1);
     if (user.length === 0) {
       return res.status(401).send({ error: "Invalid user" });
@@ -23,40 +28,91 @@ export const createCollection = async (req, res) => {
         title: title,
         visibility: visibility,
         description: description,
-        creator: req.user.id,
+        owner_id: userId,
       })
       .returning();
     console.log("Collection inserted successfully : ", result);
     res.status(201).send({
-      response: "collection created with id " + result[0].id,
+      response: "Collection created with id " + result[0].id,
     });
   } catch (error) {
     res.status(500).send({
-      error: "Failed to insert collection" + error,
+      error: "Failed to insert collection",
+      errorMessage: error,
     });
+    console.error("Error inserting collection : ", error);
   }
 };
 
 export const getCollectionById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const collection = await db
-            .select()
-            .from(collectionsTable)
-            .where(eq(collectionsTable.id, id))
-            .limit(1);
-        if (collection.length === 0) {
-            return res.status(404).send({ error: "Collection not found" });
-        }
-        if (collection[0].visibility === 'PRIVATE') {
-            if (!req.user || req.user.id !== collection[0].owner_id) {
-                return res.status(403).send({ error: "You do not have access to this collection" });
-            }
-        }
-        res.status(200).send({ collection: collection[0] });
-    } catch (error) {
-        res.status(500).send({
-            error: "Failed to retrieve collection: " + error,
-        });
+  const { id } = req.params;
+  try {
+    const collection = await db
+      .select()
+      .from(collectionsTable)
+      .where(eq(collectionsTable.id, id))
+      .limit(1);
+    if (collection.length === 0) {
+      return res.status(404).send({ error: "Collection not found" });
     }
+    if (collection[0].visibility === "PRIVATE") {
+      if (!req.user || req.user.id !== collection[0].owner_id) {
+        return res
+          .status(403)
+          .send({ error: "You do not have access to this collection" });
+      }
+    }
+    res.status(200).send({ collection: collection[0] });
+  } catch (error) {
+    res.status(500).send({
+      error: "Failed to retrieve collection: " + error,
+    });
+  }
+};
+
+export const getAllCollections = async (req, res) => {
+  try {
+    if (!req.userId || !req.userId.userId) {
+      return res.status(401).send({
+        error: "You need to be logged in to view your collections",
+      });
+    }
+    const userId = req.userId.userId;
+    const collections = await db
+      .select()
+      .from(collectionsTable)
+      .where(eq(collectionsTable.owner_id, userId));
+    console.log("Retrieved collections: ", collections);
+    res.status(200).send({ collections: collections });
+  } catch (error) {
+    return res.status(500).send({
+      error: "Failed to retrieve collections",
+      errorMessage: error,
+    });
+  }
+};
+
+export const searchCollections = async (req, res) => {
+  const { query } = req.params;
+  try {
+    const collections = await db
+      .select()
+      .from(collectionsTable)
+      .where(
+        and(
+          eq(collectionsTable.visibility, "PUBLIC"),
+          like(
+            collectionsTable.title.toString().toLowerCase(),
+            `%${query.toLowerCase()}%`
+          )
+        )
+      );
+    res.status(200).send({ collections: collections });
+  } catch (error) {
+    res.status(500).send({
+      error: "Failed to search collections",
+      errorMessage: error,
+    });
+    console.error("Error searching collections: ", error);
+  }
 };

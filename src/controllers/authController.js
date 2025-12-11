@@ -40,7 +40,8 @@ export const register = async (req, res) =>{
     }catch(error){
         console.error(error)
         res.status(500).json({
-            error:"Failed to register"
+            error:"Failed to register",
+            errorMessage: error
         })
     }
 }
