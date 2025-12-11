@@ -6,7 +6,7 @@ export const createCollectionSchema = z.object({
   description: z.string().max(500).optional(),
 });
 
-export const getCollectionSchema = z.object({
+export const idCollection = z.object({
   id: z.uuid(),
 });
 

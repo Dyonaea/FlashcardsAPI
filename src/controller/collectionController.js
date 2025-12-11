@@ -158,3 +158,12 @@ export const searchCollections = async (req, res) => {
     console.error("Error searching collections: ", error);
   }
 };
+
+export const deleteCollection = async (req, res) => {
+  const { id } = req.params;
+
+  if (!req.userId || !req.userId.userId) {
+    return res.status(401).send({ error: "You need to be logged in" });
+  }
+  return res.status(501).send({ error: "Not implemented yet" });
+};

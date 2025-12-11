@@ -5,6 +5,7 @@ import {
   getAllCollections,
   searchCollections,
   updateCollection,
+  deleteCollection,
 } from "../controller/collectionController.js";
 import { validateBody, validateParam } from "../middleware/validation.js";
 import {
@@ -37,5 +38,7 @@ router.patch(
   validateBody(updateCollectionSchema),
   updateCollection
 );
+
+router.delete("/:id", validateParam(idCollection), deleteCollection);
 
 export default router;
