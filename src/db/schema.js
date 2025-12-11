@@ -10,6 +10,7 @@ export const usersTable = sqliteTable("users", {
   email: text("email", { length: 255 }).notNull().unique(),
   password: text("password", { length: 255 }).notNull(),
   role: text({enum: ['USER', 'ADMIN']}).notNull().default("USER"),
+  creation_date: integer('creation_date', {mode: 'timestamp'}).notNull().$default(()=> new Date()),
 });
 
 export const collectionsTable = sqliteTable("collections", {

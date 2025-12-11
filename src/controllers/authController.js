@@ -13,7 +13,6 @@ import { eq } from "drizzle-orm"
  */
 export const register = async (req, res) =>{
     try{
-        console.log(req.body)
         const {email, first_name, last_name, password} = req.body
         const hashedPassword = await bcrypt.hash(password, 12)
         const [result] = await db.insert(usersTable).values({
