@@ -10,9 +10,9 @@ import {
 import { validateBody, validateParam } from "../middleware/validation.js";
 import {
   createCollectionSchema,
-  getCollectionSchema,
   searchCollectionSchema,
   updateCollectionSchema,
+  idCollection,
 } from "../model/collection.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
 
@@ -22,7 +22,7 @@ router.use(authenticateToken);
 
 router.post("/", validateBody(createCollectionSchema), createCollection);
 
-router.get("/:id", validateParam(getCollectionSchema), getCollectionById);
+router.get("/:id", validateParam(idCollection), getCollectionById);
 
 router.get("/", getAllCollections);
 
@@ -34,7 +34,7 @@ router.get(
 
 router.patch(
   "/:id",
-  validateParam(getCollectionSchema),
+  validateParam(idCollection),
   validateBody(updateCollectionSchema),
   updateCollection
 );
