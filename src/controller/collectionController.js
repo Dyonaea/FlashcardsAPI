@@ -4,9 +4,6 @@ import { eq, like, and } from "drizzle-orm";
 
 export const createCollection = async (req, res) => {
   const { title, visibility, description } = req.body;
-  console.log("Trying to create collection with body : ", req.body);
-
-  console.log("Request made by ; " + req.userId.userId);
   if (!req.userId.userId) {
     return res.status(401).send({
       error: "You need to be logged in in order to create a collection",
@@ -31,16 +28,15 @@ export const createCollection = async (req, res) => {
         owner_id: userId,
       })
       .returning();
-    console.log("Collection inserted successfully : ", result);
-    res.status(201).send({
+    return res.status(201).send({
       response: "Collection created with id " + result[0].id,
     });
   } catch (error) {
-    res.status(500).send({
+    console.error("Error inserting collection : ", error);
+    return res.status(500).send({
       error: "Failed to insert collection",
       errorMessage: error,
     });
-    console.error("Error inserting collection : ", error);
   }
 };
 
@@ -62,9 +58,10 @@ export const getCollectionById = async (req, res) => {
           .send({ error: "You do not have access to this collection" });
       }
     }
-    res.status(200).send({ collection: collection[0] });
+    return res.status(200).send({ collection: collection[0] });
   } catch (error) {
-    res.status(500).send({
+    console.error("Error retrieving collection: ", error);
+    return res.status(500).send({
       error: "Failed to retrieve collection: " + error,
     });
   }
@@ -82,9 +79,9 @@ export const getAllCollections = async (req, res) => {
       .select()
       .from(collectionsTable)
       .where(eq(collectionsTable.owner_id, userId));
-    console.log("Retrieved collections: ", collections);
-    res.status(200).send({ collections: collections });
+    return res.status(200).send({ collections: collections });
   } catch (error) {
+    console.error("Error retrieving collections: ", error);
     return res.status(500).send({
       error: "Failed to retrieve collections",
       errorMessage: error,
@@ -148,14 +145,13 @@ export const searchCollections = async (req, res) => {
           like(collectionsTable.title, `%${query}%`)
         )
       );
-    console.log("Search results: ", collections);
-    res.status(200).send({ collections: collections });
+    return res.status(200).send({ collections: collections });
   } catch (error) {
-    res.status(500).send({
+    console.error("Error searching collections: ", error);
+    return res.status(500).send({
       error: "Failed to search collections",
       errorMessage: error,
     });
-    console.error("Error searching collections: ", error);
   }
 };
 
@@ -181,7 +177,7 @@ export const deleteCollection = async (req, res) => {
       return res.status(403).send({ error: "You do not own this collection" });
     }
 
-    const [result] = await db // destructuration avec les tableau (on prend que la première valeur)
+    const [result] = await db
       .delete(collectionsTable)
       .where(eq(collectionsTable.id, id))
       .returning();
@@ -194,6 +190,7 @@ export const deleteCollection = async (req, res) => {
       response: "Collection " + id + " deleted",
     });
   } catch (error) {
+    console.error("Error deleting collection: ", error);
     return res.status(500).send({
       error: "Failed to delete collection" + error,
     });
