@@ -17,7 +17,7 @@ export const createCollection = async (req, res) => {
       .where(eq(usersTable.id, userId))
       .limit(1);
     if (user.length === 0) {
-      return res.status(401).send({ error: "Invalid user" });
+      return res.status(401).send({ error: "Error : User not found" });
     }
     const result = await db
       .insert(collectionsTable)
@@ -43,6 +43,12 @@ export const createCollection = async (req, res) => {
 export const getCollectionById = async (req, res) => {
   const { id } = req.params;
   try {
+    if (!req.userId.userId) {
+      return res.status(401).send({
+        error: "You need to be logged in in order to create a collection",
+      });
+    }
+    const userId = req.userId.userId;
     const collection = await db
       .select()
       .from(collectionsTable)
@@ -51,8 +57,16 @@ export const getCollectionById = async (req, res) => {
     if (collection.length === 0) {
       return res.status(404).send({ error: "Collection not found" });
     }
+    const user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1);
+    if (user.length === 0) {
+      return res.status(404).send({ error: "User not found" });
+    }
     if (collection[0].visibility === "PRIVATE") {
-      if (!req.user || req.user.id !== collection[0].owner_id) {
+      if (userId !== collection[0].owner_id && user[0].role !== "ADMIN") {
         return res
           .status(403)
           .send({ error: "You do not have access to this collection" });
