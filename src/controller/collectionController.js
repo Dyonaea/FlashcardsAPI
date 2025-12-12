@@ -165,5 +165,39 @@ export const deleteCollection = async (req, res) => {
   if (!req.userId || !req.userId.userId) {
     return res.status(401).send({ error: "You need to be logged in" });
   }
-  return res.status(501).send({ error: "Not implemented yet" });
+
+  try {
+    const existing = await db
+      .select()
+      .from(collectionsTable)
+      .where(eq(collectionsTable.id, id))
+      .limit(1);
+
+    if (existing.length === 0) {
+      return res.status(404).send({ error: "Collection not found" });
+    }
+
+    if (existing[0].owner_id !== req.userId.userId) {
+      return res.status(403).send({ error: "You do not own this collection" });
+    }
+
+    const [result] = await db // destructuration avec les tableau (on prend que la première valeur)
+      .delete(collectionsTable)
+      .where(eq(collectionsTable.id, id))
+      .returning();
+    if (!result) {
+      return res.status(404).send({
+        response: "No collection with this id was found",
+      });
+    }
+    return res.status(200).send({
+      response: "Collection " + id + " deleted",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "Failed to delete collection" + error,
+    });
+  }
+
+  return res.status(200).send({ message: "Collection deleted successfully" });
 };
