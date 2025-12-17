@@ -8,8 +8,8 @@ export const createFlashCard = async (req, res)=>{
     const [result] = await db.select().from(collectionsTable).where(eq(collectionsTable.id, collection_id))
     if (req.userId.userId != result.owner_id)
         return res.status(403).json({error: `Collection ${collection_id} is not yours` })
-    await db.insert(cardTable).values({front, back, front_URL, back_URL, collection_id})
-    return res.status(200).json({message: "FlashCard added successfully"})
+    const [card] = await db.insert(cardTable).values({front, back, front_URL, back_URL, collection_id}).returning()
+    return res.status(200).json({message: `FlashCard ${card.id} added successfully to collection ${collection_id}`, id: card.id, collection_id: collection_id})
     }catch(error){
         console.error(error)
         return res.status(500).json({error: "internal server error while creating the flashCard"})
