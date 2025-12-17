@@ -24,7 +24,6 @@ export const register = async (req, res) => {
         password: hashedPassword,
       })
       .returning({
-        id: usersTable.id,
         email: usersTable.email,
         first_name: usersTable.first_name,
         last_name: usersTable.last_name,
@@ -71,7 +70,6 @@ export const login = async (req, res) => {
     return res.status(200).json({
       message: "User logged in successfully",
       userData: {
-        id: user.id,
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
