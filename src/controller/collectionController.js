@@ -4,21 +4,8 @@ import { eq, like, and } from "drizzle-orm";
 
 export const createCollection = async (req, res) => {
   const { title, visibility, description } = req.body;
-  if (!req.userId.userId) {
-    return res.status(401).send({
-      error: "You need to be logged in in order to create a collection",
-    });
-  }
   const userId = req.userId.userId;
   try {
-    const user = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, userId))
-      .limit(1);
-    if (user.length === 0) {
-      return res.status(401).send({ error: "Error : User not found" });
-    }
     const result = await db
       .insert(collectionsTable)
       .values({
@@ -30,6 +17,7 @@ export const createCollection = async (req, res) => {
       .returning();
     return res.status(201).send({
       response: "Collection created with id " + result[0].id,
+      id: result[0].id,
     });
   } catch (error) {
     console.error("Error inserting collection : ", error);
@@ -43,11 +31,6 @@ export const createCollection = async (req, res) => {
 export const getCollectionById = async (req, res) => {
   const { id } = req.params;
   try {
-    if (!req.userId.userId) {
-      return res.status(401).send({
-        error: "You need to be logged in in order to create a collection",
-      });
-    }
     const userId = req.userId.userId;
     const collection = await db
       .select()
@@ -83,11 +66,6 @@ export const getCollectionById = async (req, res) => {
 
 export const getAllCollections = async (req, res) => {
   try {
-    if (!req.userId || !req.userId.userId) {
-      return res.status(401).send({
-        error: "You need to be logged in to view your collections",
-      });
-    }
     const userId = req.userId.userId;
     const collections = await db
       .select()
@@ -106,10 +84,6 @@ export const getAllCollections = async (req, res) => {
 export const updateCollection = async (req, res) => {
   const { id } = req.params;
   const { title, visibility, description } = req.body;
-
-  if (!req.userId || !req.userId.userId) {
-    return res.status(401).send({ error: "You need to be logged in" });
-  }
 
   try {
     const existing = await db
@@ -172,10 +146,6 @@ export const searchCollections = async (req, res) => {
 export const deleteCollection = async (req, res) => {
   const { id } = req.params;
 
-  if (!req.userId || !req.userId.userId) {
-    return res.status(401).send({ error: "You need to be logged in" });
-  }
-
   try {
     const existing = await db
       .select()
@@ -209,6 +179,4 @@ export const deleteCollection = async (req, res) => {
       error: "Failed to delete collection" + error,
     });
   }
-
-  return res.status(200).send({ message: "Collection deleted successfully" });
 };
