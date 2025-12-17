@@ -4,11 +4,11 @@ import { cardTable, collectionsTable, usersTable } from "../db/schema.js";
 
 export const createFlashCard = async (req, res)=>{
     try{
-    const { front, back, front_URL, back_URL, collection_ID } = req.body;
-    const [result] = await db.select().from(collectionsTable).where(eq(collectionsTable.collection_ID, collection_ID))
+    const { front, back, front_URL, back_URL, collection_id } = req.body;
+    const [result] = await db.select().from(collectionsTable).where(eq(collectionsTable.collection_id, collection_id))
     if (req.userId.userId != result.owner_id)
-        return res.status(403).json({error: `Collection ${collection_ID} is not yours` })
-    await db.insert(cardTable).values({front, back, front_URL, back_URL, collection_ID})
+        return res.status(403).json({error: `Collection ${collection_id} is not yours` })
+    await db.insert(cardTable).values({front, back, front_URL, back_URL, collection_id})
     return res.status(200).json({message: "FlashCard added successfully"})
     }catch(error){
         console.error(error)
