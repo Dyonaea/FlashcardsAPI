@@ -9,8 +9,8 @@ router.use(authenticateToken)
 router.post('/', validateBody(createFlashCardSchema), createFlashCard)
 router.get('/:id', validateParam(getFlashCardSchema), getFlashCard)
 //lister les flashcards d'une collection
-router.patch('/:id', editFlashCard)
-router.delete('/:id', deleteFlashCard)
+router.patch('/:id', validateParam(getFlashCardSchema), editFlashCard)
+router.delete('/:id', validateParam(getFlashCardSchema), deleteFlashCard)
 //reviser une flashcard
 
 export default router
