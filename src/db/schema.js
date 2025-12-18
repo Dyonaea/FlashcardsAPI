@@ -55,5 +55,5 @@ export const cardsUsersTable = sqliteTable("cards_users", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   level: integer("level").notNull().default(1),
-  last_revision_date: integer("last_revision_date", { mode: "timestamp" }),
+  last_revision_date: integer("last_revision_date", { mode: "timestamp" }).$defaultFn(()=>new Date()),
 });

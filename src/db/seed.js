@@ -1,11 +1,11 @@
 import {db} from './database.js'
-import {cards_users_table, cardTable, collectionsTable, usersTable} from './schema.js'
+import {cardsUsersTable, cardTable, collectionsTable, usersTable} from './schema.js'
 import bcrypt from 'bcrypt'
 
 async function seed(){
     try{
         console.log('Seeding database...')
-        await db.delete(cards_users_table)
+        await db.delete(cardsUsersTable)
         await db.delete(cardTable)
         await db.delete(collectionsTable)
         await db.delete(usersTable)
@@ -80,7 +80,8 @@ async function seed(){
             }
         ]
 
-        const insertedcard_user = await db.insert(cards_users_table).values(seedCard_user).returning()
+
+        const insertedcard_user = await db.insert(cardsUsersTable).values(seedCard_user).returning()
         console.log('Database seeded successfully')
     }catch(error){
         console.log(error)
