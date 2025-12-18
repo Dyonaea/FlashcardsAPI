@@ -139,6 +139,92 @@ Renvoie une collection à partir de l'id donné dans le path
 
 #### Paramètres en entrée
 
-```json
+- l'id de la collection dans la route
 
+#### Réponse
+
+Status : 200 OK
+
+```json
+{
+  "collection": {
+    "id": "8d3ea64d-fba6-4e26-aa28-f7d3aadf3c90",
+    "title": "haha titre",
+    "description": null,
+    "owner_id": "40d2a416-8ab3-43e1-a8e1-686d530ba1a1",
+    "visibility": "PUBLIC"
+  }
+}
 ```
+
+### - Get collection/
+
+#### Description
+
+Renvoie une liste avec toutes les collections de l'utilisateur authentifié.
+
+#### Paramètres en entrée
+
+Pas de paramètres
+
+#### Réponse
+
+Status : 200 OK
+
+```json
+{
+  "collections": [
+    {
+      "id": "<uuid de la collection>",
+      "title": "titre de la collection",
+      "description": "c'est la collection de veigar",
+      "owner_id": "<uuid du propriétaire>",
+      "visibility": "PRIVATE"
+    },
+    {
+      "id": "<uuid de la collection>",
+      "title": "titre d'une autre collection",
+      "description": null,
+      "owner_id": "<uuid du propriétaire>",
+      "visibility": "PUBLIC"
+    }, ...
+  ]
+}
+```
+
+### - GET collections/search/:texte
+
+#### Description
+
+Renvoie une liste avec toutes les collections dont le titre contient le texte passé en paramètre
+
+#### Paramètres en entrée
+
+un paramètre dans l'url de type texte (ce qu'on mettrait dans une barre de recherche)
+
+#### Réponse
+
+Status : 200 OK
+
+```json
+{
+  "collections": [
+    {
+      "id": "<uuid de la collection>",
+      "title": "titre de la collection dont le texte correspond à la recherche",
+      "description": "c'est la collection de veigar",
+      "owner_id": "<uuid du propriétaire>",
+      "visibility": "PRIVATE"
+    },
+    {
+      "id": "<uuid de la collection>",
+      "title": "titre d'une autre collection dont le texte correspond à la recherche",
+      "description": null,
+      "owner_id": "<uuid du propriétaire>",
+      "visibility": "PUBLIC"
+    }, ...
+  ]
+}
+```
+
+### route
