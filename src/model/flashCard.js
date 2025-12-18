@@ -11,3 +11,10 @@ export const createFlashCardSchema = z.object({
 export const getFlashCardSchema = z.object({
     id: z.uuid(),
 });
+
+export const updateFlashCardSchema = z.object({
+    front: z.string().min(1).max(1000).optional(),
+    back: z.string().min(1).max(1000).optional(),
+    front_URL: z.string().min(1).max(1000).optional(),
+    back_URL: z.string().min(1).max(1000).optional(),
+})

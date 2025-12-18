@@ -67,5 +67,48 @@ export const getFlashCard = async (req, res) => {
     }
 };
 
-export const editFlashCard = (req, res) => {};
-export const deleteFlashCard = (req, res) => {};
+export const editFlashCard = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const { front, back, front_URL, back_URL } = req.body;
+        const [card] = await db
+            .select()
+            .from(cardTable)
+            .where(eq(cardTable.id, id));
+        const [collection] = await db.select().from(collectionsTable).where(eq(collectionsTable.id,card.collection_id))
+        
+        if (collection.owner_id != req.userId.userId){
+            return res.status(403).json({error: "you do not have access to the flashCard"})
+        }
+        const updateData = {}
+        if (front !== undefined) updateData.front = front
+        if (back !== undefined) updateData.back = back
+        if (front_URL !== undefined) updateData.front_URL = front_URL
+        if (back_URL !== undefined) updateData.back_URL = back_URL
+        const [updated] = await db.update(cardTable).set(updateData).where(eq(cardTable.id, id)).returning()
+        return res.status(200).json({message:"card updated successfully", newCard:updated})
+    }catch(error){
+        console.error(error)
+        return res.status(500).json({error: "internal server error while updating flashcard"})
+    }
+
+};
+export const deleteFlashCard = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const [card] = await db
+            .select()
+            .from(cardTable)
+            .where(eq(cardTable.id, id));
+        const [collection] = await db.select().from(collectionsTable).where(eq(collectionsTable.id,card.collection_id))
+        
+        if (collection.owner_id != req.userId.userId){
+            return res.status(403).json({error: "you do not have access to the flashCard"})
+        }
+        await db.delete(cardTable).where(eq(cardTable.id, id))
+        return res.status(200).json({message:`flashCard ${id} deleted successfully`})
+    }catch(error){
+        console.error(error)
+        return res.status(500).json({error: "internal server error while deleting flashCard"})
+    }
+};
