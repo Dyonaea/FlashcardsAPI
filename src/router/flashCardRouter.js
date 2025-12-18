@@ -35,8 +35,9 @@ router.patch(
 router.delete("/:id", validateParam(getFlashCardSchema), deleteFlashCard);
 //reviser une flashcard
 router.post(
-  "/reviewCard/",
-  validateParam(reviewingFlashCardSchema),
+  "/reviewCard/:id",
+  validateParam(getFlashCardSchema),
+  validateBody(reviewingFlashCardSchema),
   reviewFlashCard
 );
 

@@ -13,13 +13,12 @@ export const getFlashCardSchema = z.object({
 });
 
 export const reviewingFlashCardSchema = z.object({
-  id: z.uuid(),
-  level: z.int32().min(1).max(5).optional(),
+  level: z.int().min(1).max(5).optional(),
 });
 
 export const updateFlashCardSchema = z.object({
-    front: z.string().min(1).max(1000).optional(),
-    back: z.string().min(1).max(1000).optional(),
-    front_URL: z.string().min(1).max(1000).optional(),
-    back_URL: z.string().min(1).max(1000).optional(),
-})
+  front: z.string().min(1).max(1000).optional(),
+  back: z.string().min(1).max(1000).optional(),
+  front_URL: z.string().min(1).max(1000).optional(),
+  back_URL: z.string().min(1).max(1000).optional(),
+});
