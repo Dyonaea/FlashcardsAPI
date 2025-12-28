@@ -46,4 +46,19 @@ export const getUserById = async (req, res) => {
   }
 };
 
-//todo supr utilisateur a faire et documenter ce que l'on fait de ses collections
+export const deleteUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteCount = await db
+      .delete(usersTable)
+      .where(eq(usersTable.id, id))
+      .returning({ id: usersTable.id });
+    if (deleteCount.length === 0) {
+      return res.status(404).json({ error: `no user with id ${id}` });
+    }
+    return res.status(200).json({ message: `User with id ${id} deleted successfully` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to delete user" });
+  }
+};

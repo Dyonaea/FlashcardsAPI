@@ -84,7 +84,7 @@ async function seed(){
         const insertedcard_user = await db.insert(cardsUsersTable).values(seedCard_user).returning()
         console.log('Database seeded successfully')
     }catch(error){
-        console.log(error)
+        console.error(error)
     }
 }
 

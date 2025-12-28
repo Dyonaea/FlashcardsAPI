@@ -4,7 +4,7 @@ import { eq, like, and } from "drizzle-orm";
 
 export const createCollection = async (req, res) => {
   const { title, visibility, description } = req.body;
-  const userId = req.userId.userId;
+  const userId = req.userId;
   try {
     const result = await db
       .insert(collectionsTable)
@@ -31,7 +31,7 @@ export const createCollection = async (req, res) => {
 export const getCollectionById = async (req, res) => {
   const { id } = req.params;
   try {
-    const userId = req.userId.userId;
+    const userId = req.userId;
     const collection = await db
       .select()
       .from(collectionsTable)
@@ -66,7 +66,7 @@ export const getCollectionById = async (req, res) => {
 
 export const getAllCollections = async (req, res) => {
   try {
-    const userId = req.userId.userId;
+    const userId = req.userId;
     const collections = await db
       .select()
       .from(collectionsTable)
@@ -96,7 +96,7 @@ export const updateCollection = async (req, res) => {
       return res.status(404).send({ error: "Collection not found" });
     }
 
-    if (existing[0].owner_id !== req.userId.userId) {
+    if (existing[0].owner_id !== req.userId) {
       return res.status(403).send({ error: "You do not own this collection" });
     }
 
@@ -157,7 +157,7 @@ export const deleteCollection = async (req, res) => {
       return res.status(404).send({ error: "Collection not found" });
     }
 
-    if (existing[0].owner_id !== req.userId.userId) {
+    if (existing[0].owner_id !== req.userId) {
       return res.status(403).send({ error: "You do not own this collection" });
     }
 

@@ -24,8 +24,7 @@ export const adminAuthenticateToken = async (req, res, next) =>{
         if (user.role != 'ADMIN'){
             return res.status(403).json({error: 'Access denied'})
         }
-        req.userId = {userId}
-        //TODO retirer les userId.userId et mettre juste req.userId = userId
+        req.userId = userId
         next()
     }catch(error){
         console.error(error)

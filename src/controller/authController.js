@@ -94,7 +94,7 @@ export const recover = async (req, res) => {
     const [user] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.id, req.userId.userId));
+      .where(eq(usersTable.id, req.userId));
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });

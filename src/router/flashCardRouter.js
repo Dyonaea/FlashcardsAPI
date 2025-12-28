@@ -5,6 +5,7 @@ import {
   editFlashCard,
   getFlashCard,
   getFlashCardByCollection,
+  getReviewableFlashCardIds,
   reviewFlashCard,
 } from "../controller/flashCardController.js";
 import { validateBody, validateParam } from "../middleware/validation.js";
@@ -25,7 +26,7 @@ router.get(
   validateParam(getFlashCardSchema),
   getFlashCardByCollection
 );
-//lister les flashcards d'une collection
+router.get("/", getReviewableFlashCardIds);
 router.patch(
   "/:id",
   validateParam(getFlashCardSchema),
@@ -33,7 +34,6 @@ router.patch(
   editFlashCard
 );
 router.delete("/:id", validateParam(getFlashCardSchema), deleteFlashCard);
-//reviser une flashcard
 router.post(
   "/reviewCard/:id",
   validateParam(getFlashCardSchema),

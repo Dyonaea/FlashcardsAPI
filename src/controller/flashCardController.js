@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, exists } from "drizzle-orm";
 import { db } from "../db/database.js";
 import {
   cardTable,
@@ -45,7 +45,12 @@ export const createFlashCard = async (req, res) => {
       .select()
       .from(collectionsTable)
       .where(eq(collectionsTable.id, collection_id));
-    if (req.userId.userId != result.owner_id)
+    if (!result) {
+      return res
+        .status(404)
+        .json({ error: `Collection with id ${collection_id} not found` });
+    }
+    if (req.userId != result.owner_id)
       return res
         .status(403)
         .json({ error: `Collection ${collection_id} is not yours` });
@@ -53,10 +58,10 @@ export const createFlashCard = async (req, res) => {
       .insert(cardTable)
       .values({ front, back, front_URL, back_URL, collection_id })
       .returning();
-    return res.status(200).json({
-      message: `FlashCard ${card.id} added successfully to collection ${collection_id}`,
-      id: card.id,
-      collection_id: collection_id,
+    return res.status(201).json({
+      message: `FlashCard ${card.id} created successfully and added to collection ${collection_id}`,
+      flashCardId: card.id,
+      collectionId: collection_id,
     });
   } catch (error) {
     console.error(error);
@@ -68,7 +73,7 @@ export const createFlashCard = async (req, res) => {
 export const getFlashCard = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await getFlashCardData(id, req.userId.userId);
+    const result = await getFlashCardData(id, req.userId);
 
     if (result.error) {
       return res.status(result.status).json({ error: result.error });
@@ -98,9 +103,9 @@ export const getFlashCardByCollection = async (req, res) => {
     const [user] = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.id, req.userId.userId));
+      .where(eq(usersTable.id, req.userId));
     if (
-      collection.owner_id != req.userId.userId &&
+      collection.owner_id != req.userId &&
       collection.visibility != "PUBLIC" &&
       user.role != "ADMIN"
     ) {
@@ -126,7 +131,7 @@ export const reviewFlashCard = async (req, res) => {
     const { level } = req.body;
     const { id } = req.params;
 
-    const result = await getFlashCardData(id, req.userId.userId);
+    const result = await getFlashCardData(id, req.userId);
 
     if (result.error) {
       return res.status(result.status).json({ error: result.error });
@@ -139,14 +144,14 @@ export const reviewFlashCard = async (req, res) => {
       .from(cardsUsersTable)
       .where(
         and(
-          eq(cardsUsersTable.user_id, req.userId.userId),
+          eq(cardsUsersTable.user_id, req.userId),
           eq(cardsUsersTable.card_id, card.id)
         )
       );
     if (!flashcardUserLink) {
       await db
         .insert(cardsUsersTable)
-        .values({ card_id: id, user_id: req.userId.userId })
+        .values({ card_id: id, user_id: req.userId })
         .returning();
       return res.status(201).json({ flashCard: card });
     }
@@ -156,7 +161,7 @@ export const reviewFlashCard = async (req, res) => {
         2 ** (flashcardUserLink.level - 1) * 86400 * 1000
     );
     if (nextReviewDate > new Date()) {
-      return res.status(400).json({
+      return res.status(409).json({
         error:
           "You cannot review this flashcard yet you must wait until " +
           nextReviewDate.toLocaleString(),
@@ -165,7 +170,7 @@ export const reviewFlashCard = async (req, res) => {
     }
     await db
       .update(cardsUsersTable)
-      .set({ level: level || flashcardUserLink.level })
+      .set({ level: level || flashcardUserLink.level,last_revision_date: new Date() })
       .where(eq(cardsUsersTable.id, flashcardUserLink.id));
     return res.status(200).json({ flashCard: card });
   } catch (error) {
@@ -189,7 +194,7 @@ export const editFlashCard = async (req, res) => {
       .from(collectionsTable)
       .where(eq(collectionsTable.id, card.collection_id));
 
-    if (collection.owner_id != req.userId.userId) {
+    if (collection.owner_id != req.userId) {
       return res
         .status(403)
         .json({ error: "you do not have access to the flashCard" });
@@ -227,7 +232,7 @@ export const deleteFlashCard = async (req, res) => {
       .from(collectionsTable)
       .where(eq(collectionsTable.id, card.collection_id));
 
-    if (collection.owner_id != req.userId.userId) {
+    if (collection.owner_id != req.userId) {
       return res
         .status(403)
         .json({ error: "you do not have access to the flashCard" });
@@ -241,5 +246,29 @@ export const deleteFlashCard = async (req, res) => {
     return res
       .status(500)
       .json({ error: "internal server error while deleting flashCard" });
+  }
+};
+
+export const getReviewableFlashCardIds = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const currentDate = new Date();
+    const reviewableCards = await db
+      .select()
+      .from(cardsUsersTable)
+      .where(eq(cardsUsersTable.user_id, userId));
+    const reviewableCardIds = reviewableCards
+      .filter(
+        (card) =>
+          new Date(new Date(card.last_revision_date).getTime() + 2 ** (card.level - 1) * 86400 * 1000) <
+          currentDate
+      )
+      .map((card) => card.card_id);
+    return res.status(200).json({ reviewableCardIds });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: "internal server error while retrieving reviewable flashCard ids",
+    });
   }
 };
