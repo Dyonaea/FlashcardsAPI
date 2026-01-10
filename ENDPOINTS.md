@@ -391,7 +391,10 @@ Rien
 
 ```json
 {
-  "reviewableCardIds": ["7978c5fe-6d40-456a-a9cd-baa59a889c46"]
+    "reviewableCardIds": [
+        "9dc59b52-5966-4a11-8b68-f0daf60c6f9c",
+        "1fb3a3a6-c8bb-4c47-813e-480dbb7a8810"
+    ]
 }
 ```
 

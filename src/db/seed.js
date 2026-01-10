@@ -76,12 +76,32 @@ async function seed(){
             {
                 card_id: insertedCards[0].id,
                 user_id: insertedUsers[0].id,
-                level: 2
+                level: 2,
+                last_revision_date: new Date(0)
+            },
+            {
+                card_id: insertedCards[1].id,
+                user_id: insertedUsers[0].id,
+                level: 3,
+                last_revision_date: new Date(0)
+            },
+            {
+                card_id: insertedCards[2].id,
+                user_id: insertedUsers[1].id,
+                level: 1,
+                last_revision_date: new Date(0)
+            },
+            {
+                card_id: insertedCards[3].id,
+                user_id: insertedUsers[1].id,
+                level: 4,
+                last_revision_date: new Date(0)
             }
         ]
 
-
-        const insertedcard_user = await db.insert(cardsUsersTable).values(seedCard_user).returning()
+        seedCard_user.map(async(seedCard_user) =>{
+            await db.insert(cardsUsersTable).values(seedCard_user).returning()
+        })
         console.log('Database seeded successfully')
     }catch(error){
         console.error(error)
