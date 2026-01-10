@@ -39,7 +39,7 @@ Status : 200 OK
 
 Ne retourne pas le mot de passe pour des questions de sécurité.
 
-### - POST auth/register :
+### - POST /auth/register :
 
 #### Description
 
@@ -74,7 +74,7 @@ status 201 Created
 
 Ne retourne pas le mot de passe pour des questions de sécurité.
 
-### - GET auth/ : (avec token)
+### - GET /auth : (avec token)
 
 #### Description
 
@@ -86,7 +86,7 @@ Token d'authentification via **_token bearer_**.
 
 #### Réponse
 
-retour attendu :
+Status: 200 OK
 
 ```json
 {
@@ -131,7 +131,7 @@ status: 201 Created
 }
 ```
 
-### - GET collections/:id
+### - GET /collections/:id
 
 #### Description
 
@@ -157,7 +157,7 @@ Status : 200 OK
 }
 ```
 
-### - Get collection/
+### - Get /collections
 
 #### Description
 
@@ -192,7 +192,7 @@ Status : 200 OK
 }
 ```
 
-### - GET collections/search/:texte
+### - GET /collections/search/:texte
 
 #### Description
 
@@ -227,7 +227,7 @@ Status : 200 OK
 }
 ```
 
-### - PATCH collections/:id
+### - PATCH /collections/:id
 
 #### Description
 
@@ -263,7 +263,7 @@ Status : 200 OK
 }
 ```
 
-### - DELETE collections/:id
+### - DELETE /collections/:id
 
 #### Description
 
@@ -285,7 +285,7 @@ Status : 200 OK
 
 ## Manipulation Flash Cards
 
-### - POST flashcard/
+### - POST /flashcard
 
 #### Description
 
@@ -315,7 +315,7 @@ Status: 201 Created
 }
 ```
 
-### - GET flashcard/:id
+### - GET /flashcard/:id
 
 #### Description
 
@@ -327,7 +327,7 @@ Récupère une flashcard à partir de son id. La flashcard doit soit vous appart
 
 #### Réponse
 
-Status: 200 Created
+Status: 200 OK
 
 ```json
 {
@@ -342,7 +342,7 @@ Status: 200 Created
 }
 ```
 
-### - GET flashcard/byCollection/:id
+### - GET /flashcard/byCollection/:id
 
 #### Description
 
@@ -353,6 +353,8 @@ Récupère toutes les falshcards d'une collection à partir de l'id de la collec
 - l'id de la collection recherchée
 
 #### Réponse
+
+Status: 200 OK
 
 ```json
 {
@@ -377,7 +379,7 @@ Récupère toutes les falshcards d'une collection à partir de l'id de la collec
 }
 ```
 
-### - GET flashcard/
+### - GET /flashcard
 
 #### Description
 
@@ -389,6 +391,8 @@ Rien
 
 #### Réponse
 
+Status: 200 OK
+
 ```json
 {
     "reviewableCardIds": [
@@ -398,7 +402,7 @@ Rien
 }
 ```
 
-### - PATCH flashcard/:id
+### - PATCH /flashcard/:id
 
 #### Description
 
@@ -435,7 +439,7 @@ Status 200
 }
 ```
 
-### - DELETE flashcard/:id
+### - DELETE /flashcard/:id
 
 #### Description
 
@@ -447,13 +451,15 @@ Détruit une flashcard à partir de son id. L'utilisateur doit être propriétai
 
 #### Réponse
 
+Status: 200 OK
+
 ```json
 {
   "message": "flashCard 28b496a6-167c-4571-9554-15f0efbf92f1 deleted successfully"
 }
 ```
 
-### - POST flashcard/reviewCard/:id
+### - POST /flashcard/reviewCard/:id
 
 #### Description
 
@@ -508,7 +514,7 @@ S'il est trop tôt pour réviser la carte :
 
 Pour toutes les routes suivantes un **_token d'autentification d'un compte administrateur_** devra être renseigné dans la partie **_token bearer_**.
 
-### - GET /user/
+### - GET /user
 
 #### Description
 
