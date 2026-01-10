@@ -454,7 +454,8 @@ Détruit une flashcard à partir de son id. L'utilisateur doit être propriétai
 
 #### Description
 
-Récupère les information d'une flashcard dont son recto et son verso. La flash card ne pourra pas être revue pendant une durée de temps dépendant de sa difficulté (voir tableau ci dessous). Si le délai n'est pas respecté alors le contenu de la falshcard ne sera pas retourné et à la place la date de prochaine révision sera donnée.
+Récupère les information d'une flashcard dont son recto et son verso. La flash card ne pourra pas être revue pendant une durée de temps dépendant de sa difficulté (voir tableau ci dessous). Si le délai n'est pas respecté alors le contenu de la falshcard ne sera pas retourné et à la place la date de prochaine révision sera donnée. 
+Lors de la révision vous pouvez également redéfinir le niveau de révision.
 
 | Niveau | Délai de révision |
 | ------ | ----------------- |
@@ -466,7 +467,11 @@ Récupère les information d'une flashcard dont son recto et son verso. La flash
 
 #### Paramètres en entrée
 
-- l'id de la collection que l'on souhaite détruire dans la route
+- l'id de la flashCard que l'on souhaite réviser dans la route
+- level : le nouveau niveau que l'on veut donner à la flashCard
+```json 
+  "level" : 1 # un entier de 1 à 5 (optionel)
+```
 
 #### Réponse
 
@@ -474,7 +479,14 @@ Status : 200 OK
 
 ```json
 {
-  "response": "Collection dc9e3967-4292-4512-aee8-dae23c068eb8 deleted"
+  "flashCard": {
+    "id": "971c1388-864e-430d-83c2-233a63a0d768",
+    "front": "question ?",
+    "back": "réponse.",
+    "front_URL": "/image.png",
+    "back_URL": "/image.png",
+    "collection_id": "edb72b3c-cf49-4b8b-89dc-4d4d78d8b713"
+  }
 }
 ```
 
