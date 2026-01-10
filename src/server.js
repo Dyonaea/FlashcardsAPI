@@ -17,5 +17,5 @@ app.use("/user", userRouter);
 app.use("/flashcard", flashCardRouter)
 
 app.listen(PORT, () => {
-  console.log(`server running on http://localhst:${PORT}`);
+  console.log(`server running on http://localhost:${PORT}`);
 });

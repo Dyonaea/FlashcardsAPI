@@ -31,6 +31,7 @@ export const register = async (req, res) => {
         password: hashedPassword,
       })
       .returning({
+        id: usersTable.id,
         email: usersTable.email,
         first_name: usersTable.first_name,
         last_name: usersTable.last_name,
@@ -44,7 +45,12 @@ export const register = async (req, res) => {
     );
     return res.status(201).json({
       message: "User Created",
-      user: result,
+      user: 
+      {
+        email: result.email,
+        first_name: result.first_name,
+        last_name: result.last_name,
+      },
       token: token,
     });
   } catch (error) {
@@ -105,6 +111,7 @@ export const recover = async (req, res) => {
       email: user.email,
     });
   } catch (error) {
+    console.error(`Error on recovering user data : ${error}`);
     return res.status(500).json({ user: "Failed to recover infos" });
   }
 };
