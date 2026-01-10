@@ -6,7 +6,7 @@
 
 ### /auth : Routes de manipulation de connection
 
-### - POST /auth/logging :
+### - POST /auth/login :
 
 #### Description
 
